@@ -1,0 +1,22 @@
+name: 'Build'
+
+jobs:
+    - job: Build
+      displayName: 'Build'
+      variables:
+        BuildConfiguration: Release
+        appVersion: '1.0.0'
+        isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+      workspace: 
+        clean: all
+      pool:
+        name: Azure Pipelines
+        vmImage: ubuntu-20.04
+      steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'           
+
+      - script: './build.sh --target compile --configuration $(BuildConfiguration) --host AzurePipelines'
+        displayName: 'Run NUKE build'
