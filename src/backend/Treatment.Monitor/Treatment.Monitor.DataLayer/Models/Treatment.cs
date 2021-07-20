@@ -12,7 +12,7 @@ namespace Treatment.Monitor.DataLayer.Models
         public DateTime StartDate { get; private set; }
 
         public bool Terminated { get; set; }
-        
+
         public ICollection<MedicineApplication> MedicineApplications { get; set; }
 
         public static Treatment Create(string name, ICollection<MedicineApplication> medicines) =>

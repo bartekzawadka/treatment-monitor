@@ -1,0 +1,10 @@
+<mat-list class="content-container" *ngIf="treatments && treatments.length > 0">
+</mat-list>
+
+<div class="centered-container" *ngIf="!treatments || treatments.length === 0">
+  <h2 class="background-notification-text">No treatments defined yet!</h2>
+  <button mat-raised-button class="center" color="accent">
+    <mat-icon>add</mat-icon>
+    Create a new one
+  </button>
+</div>

@@ -1,0 +1,28 @@
+@use '~@angular/material' as mat;
+
+.icon-error {
+  color: mat.get-color-from-palette(mat.$red-palette, 800);
+}
+.icon-warning {
+  color: mat.get-color-from-palette(mat.$orange-palette, 500);
+}
+.icon-info {
+  color: mat.get-color-from-palette(mat.$blue-palette, 500);
+}
+
+.mat-icon {
+  width: 36px;
+  height: 36px;
+  font-size: 36px !important;
+  margin-right: 10px;
+}
+
+.message-container {
+  display: flex;
+  min-width: 30vw !important;
+  min-height: 36px;
+}
+
+.material-icons {
+  font-size: 30px;
+}

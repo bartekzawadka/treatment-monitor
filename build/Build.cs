@@ -63,11 +63,11 @@ class Build : NukeBuild
     Target Restore => _ => _
         .Executes(() =>
         {
-            // NpmTasks.NpmInstall(settings =>
-            //     settings
-            //         .SetProcessLogOutput(true)
-            //         .SetProcessWorkingDirectory(AppDirectory));
-            
+            NpmTasks.NpmInstall(settings =>
+                settings
+                    .EnableProcessLogOutput()
+                    .SetProcessWorkingDirectory(AppDirectory));
+
             NuGetTasks.NuGetRestore(settings =>
                 settings
                     .SetTargetPath(Solution)
@@ -78,13 +78,11 @@ class Build : NukeBuild
         .DependsOn(Restore)
         .Executes(() =>
         {
-            // var command = "run ng run app:build";
-            // if (Equals(Configuration, Configuration.Release))
-            // {
-            //     command += ":production";
-            // }
-            //
-            // NpmTasks.Npm(command, AppDirectory);
+            NpmTasks.NpmRun(settings =>
+                settings
+                    .SetCommand("build")
+                    .SetProcessWorkingDirectory(AppDirectory)
+                    .EnableProcessLogOutput());
 
             DotNetTasks.DotNetBuild(settings =>
                 settings
@@ -97,15 +95,15 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            // AbsolutePath srcDir = AppDirectory / "www";
-            // AbsolutePath destDir = PublishDirectory / "app";
-            //
-            // if (Directory.Exists(destDir))
-            // {
-            //     DeleteDirectory(destDir);
-            // }
-            //
-            // CopyDirectoryRecursively(srcDir, destDir);
+            AbsolutePath srcDir = AppDirectory / "dist";
+            AbsolutePath destDir = PublishDirectory / "app";
+
+            if (Directory.Exists(destDir))
+            {
+                DeleteDirectory(destDir);
+            }
+
+            CopyDirectoryRecursively(srcDir, destDir);
 
             DotNetTasks.DotNetPublish(settings =>
                 settings

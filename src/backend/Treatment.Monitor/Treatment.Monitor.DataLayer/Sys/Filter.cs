@@ -19,7 +19,7 @@ namespace Treatment.Monitor.DataLayer.Sys
         {
             FilterDefinition = new ExpressionFilterDefinition<T>(expression);
         }
-        
+
         public FilterDefinition<T> FilterDefinition { get; set; } = FilterDefinition<T>.Empty;
 
         public int PageSize
@@ -74,7 +74,7 @@ namespace Treatment.Monitor.DataLayer.Sys
                 }
             };
 
-        public static Filter<T> GetFilterById(string id) => 
+        public static Filter<T> GetFilterById(string id) =>
             new Filter<T>(document => document.Id == id);
     }
 }

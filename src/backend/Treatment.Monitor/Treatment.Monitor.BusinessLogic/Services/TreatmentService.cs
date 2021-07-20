@@ -42,7 +42,7 @@ namespace Treatment.Monitor.BusinessLogic.Services
             {
                 return ServiceActionResult<TreatmentDto>.GetDataError("Treatment already exists with provided ID");
             }
-            
+
             var medicines = dto.Medicines ?? new List<MedicineApplicationDto>();
             var medicinesModel = medicines
                 .Select(TreatmentMapper.GetMedicineApplicationModelFromDto)
@@ -64,7 +64,7 @@ namespace Treatment.Monitor.BusinessLogic.Services
             {
                 return ServiceActionResult<TreatmentDto>.GetNotFound($"No treatment found by ID {id}");
             }
-            
+
             var model = TreatmentMapper.GetModelFromDto(dto);
             await _treatmentRepository.UpdateAsync(id, model);
             return ServiceActionResult<TreatmentDto>.GetCreated(TreatmentMapper.GetDtoFromModel(model));

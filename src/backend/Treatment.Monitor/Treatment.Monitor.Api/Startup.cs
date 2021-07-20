@@ -19,7 +19,7 @@ namespace Treatment.Monitor
     public class Startup
     {
         private IConfiguration Configuration { get; }
-        
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -36,7 +36,7 @@ namespace Treatment.Monitor
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
-            
+
             var connectionString = Configuration.GetConnectionString(Consts.DatabaseName);
             var connectionStringVar = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
             if (!string.IsNullOrWhiteSpace(connectionStringVar))
@@ -46,13 +46,13 @@ namespace Treatment.Monitor
 
             var context = new TreatmentMonitorContext(connectionString);
             services.AddSingleton(context);
-            
+
             IConfigurationSection securityConfigSection = Configuration.GetSection(nameof(SecuritySettings));
             var securitySettings = securityConfigSection.Get<SecuritySettings>();
             services.AddSingleton<ISecuritySettings>(securitySettings);
-            
+
             services.AddControllers(options => { options.Filters.Add<ServiceActionFilter>(); });
-            
+
             services.AddSingleton<IGenericRepository<TreatmentModel>, GenericRepository<TreatmentModel>>();
             services.AddScoped<ITreatmentService, TreatmentService>();
         }
@@ -72,7 +72,7 @@ namespace Treatment.Monitor
                     .WithOrigins(securitySettings?.AllowedHost)
                     .AllowAnyMethod()
                     .AllowAnyHeader());
-            
+
             app.ConfigureExceptionHandler();
             app.UseRouting();
             app.UseAuthentication();

@@ -30,7 +30,7 @@ namespace Treatment.Monitor.DataLayer.Repositories
             TFilter filter,
             Expression<Func<TCollection, TOut>> selectClause)
             where TFilter : Filter<TCollection>, new();
-        
+
         Task InsertAsync(TCollection item);
 
         Task InsertManyAsync(IEnumerable<TCollection> items);

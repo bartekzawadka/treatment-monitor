@@ -1,1 +1,55 @@
 /* You can add global styles to this file, and also import other style files */
+@use '~@angular/material' as mat;
+@include mat.core();
+
+$mat-primary-scheme: (
+  100: #94d2bd,
+  500: #005f73,
+  700: #0a9396,
+  contrast: (
+    100: rgba(0,0,0,0.87),
+    500: #ffffff,
+    700: #ffffff,
+  )
+);
+$mat-accent-scheme: (
+  100: #e9d8a6,
+  500: #ee9b00,
+  700: #ca6702,
+  contrast: (
+    100: rgba(0,0,0,0.87),
+    500: rgba(0,0,0,0.87),
+    700: #ffffff,
+  )
+);
+$mat-primary-palette: mat.define-palette($mat-primary-scheme);
+$mat-accent-palette: mat.define-palette($mat-accent-scheme);
+
+$app-light-theme: mat.define-light-theme($mat-primary-palette, $mat-accent-palette);
+
+$app-dark-theme: mat.define-dark-theme($mat-primary-palette, $mat-accent-palette);
+@include mat.all-component-themes($app-light-theme);
+.darkMode {
+  @include mat.all-component-themes($app-dark-theme);
+}
+
+body { margin: 0; }
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.content-wrapper {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.content-container {
+  max-width: 960px;
+  margin: 20px auto 60px auto;
+}
+
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}

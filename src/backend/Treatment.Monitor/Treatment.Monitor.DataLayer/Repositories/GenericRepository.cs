@@ -12,14 +12,14 @@ namespace Treatment.Monitor.DataLayer.Repositories
     public class GenericRepository<TCollection> : IGenericRepository<TCollection> where TCollection : Document
     {
         private IMongoCollection<TCollection> Collection { get; }
-        
+
         public GenericRepository(TreatmentMonitorContext context)
         {
             string name = Regex.Replace(typeof(TCollection).Name, "(\\B[A-Z])", ".$1").ToLower();
             Collection = context.Database.GetCollection<TCollection>(name);
         }
-        
-        public async Task<bool> ExistsAsync<TFilter>(TFilter filter) where TFilter : Filter<TCollection>, new() => 
+
+        public async Task<bool> ExistsAsync<TFilter>(TFilter filter) where TFilter : Filter<TCollection>, new() =>
             await CountAsync(filter) > 0;
 
         public async Task<long> CountAsync<TFilter>(TFilter filter) where TFilter : Filter<TCollection>, new()
