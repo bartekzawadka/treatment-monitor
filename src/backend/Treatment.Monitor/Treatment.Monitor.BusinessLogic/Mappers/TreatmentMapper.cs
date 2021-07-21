@@ -10,7 +10,7 @@ namespace Treatment.Monitor.BusinessLogic.Mappers
     public static class TreatmentMapper
     {
         public static TreatmentListItemDto GetListItemDtoFromModel(TreatmentModel model) =>
-            new TreatmentListItemDto
+            new()
             {
                 Id = model.Id,
                 Name = model.Name,
@@ -19,7 +19,7 @@ namespace Treatment.Monitor.BusinessLogic.Mappers
             };
 
         public static TreatmentDto GetDtoFromModel(TreatmentModel model) =>
-            new TreatmentDto
+            new()
             {
                 Id = model.Id,
                 Name = model.Name,
@@ -29,17 +29,16 @@ namespace Treatment.Monitor.BusinessLogic.Mappers
             };
 
         public static MedicineApplicationDto GetMedicineApplicationDtoFromModel(MedicineApplication model) =>
-            new MedicineApplicationDto
+            new()
             {
                 Id = model.Id,
                 Name = model.Name,
-                CronExpression = model.CronExpression,
                 StartDate = model.StartDate,
                 NumberOfDays = model.NumberOfDays
             };
 
         public static TreatmentModel GetModelFromDto(TreatmentDto dto) =>
-            new TreatmentModel
+            new()
             {
                 Id = dto.Id,
                 Name = dto.Name,
@@ -48,11 +47,10 @@ namespace Treatment.Monitor.BusinessLogic.Mappers
             };
 
         public static MedicineApplication GetMedicineApplicationModelFromDto(MedicineApplicationDto dto) =>
-            new MedicineApplication
+            new()
             {
                 Id = dto.Id ?? Guid.NewGuid().ToString(),
                 Name = dto.Name,
-                CronExpression = dto.CronExpression,
                 StartDate = dto.StartDate,
                 NumberOfDays = dto.NumberOfDays
             };

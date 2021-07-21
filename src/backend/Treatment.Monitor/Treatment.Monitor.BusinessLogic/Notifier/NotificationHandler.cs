@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Server;
 using Microsoft.Extensions.Logging;
+using Treatment.Monitor.BusinessLogic.Email;
 using Treatment.Monitor.DataLayer.Models;
 using Treatment.Monitor.DataLayer.Repositories;
 using TreatmentModel = Treatment.Monitor.DataLayer.Models.Treatment;
@@ -13,13 +14,16 @@ namespace Treatment.Monitor.BusinessLogic.Notifier
 {
     public class NotificationHandler : INotificationHandler
     {
+        private readonly IEmailSender _emailSender;
         private readonly IGenericRepository<TreatmentModel> _treatmentRepository;
         private readonly ILogger<NotificationHandler> _logger;
 
         public NotificationHandler(
+            IEmailSender emailSender,
             IGenericRepository<TreatmentModel> treatmentRepository,
             ILogger<NotificationHandler> logger)
         {
+            _emailSender = emailSender;
             _treatmentRepository = treatmentRepository;
             _logger = logger;
         }
@@ -63,7 +67,7 @@ namespace Treatment.Monitor.BusinessLogic.Notifier
                     return;
                 }
 
-                // TODO: send
+                await _emailSender.SendAsync(new EmailNotificationContext(treatment.Name, medicine));
             }
             catch (Exception ex)
             {

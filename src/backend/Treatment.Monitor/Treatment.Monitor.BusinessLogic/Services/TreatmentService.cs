@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
+using Treatment.Monitor.BusinessLogic.Cron;
 using Treatment.Monitor.BusinessLogic.Dto;
 using Treatment.Monitor.BusinessLogic.Mappers;
 using Treatment.Monitor.BusinessLogic.Notifier;
 using Treatment.Monitor.BusinessLogic.ServiceAction;
+using Treatment.Monitor.DataLayer.Models;
 using Treatment.Monitor.DataLayer.Repositories;
 using Treatment.Monitor.DataLayer.Sys;
 using TreatmentModel = Treatment.Monitor.DataLayer.Models.Treatment;
@@ -51,10 +53,9 @@ namespace Treatment.Monitor.BusinessLogic.Services
                 .Select(TreatmentMapper.GetMedicineApplicationModelFromDto)
                 .ToList();
             var model = TreatmentModel.Create(dto.Name, medicinesModel);
-
+            
             await _treatmentRepository.InsertAsync(model);
-
-            // TODO: Update recurring jobs
+            UpdateNotificationJobs(model);
 
             return ServiceActionResult<TreatmentDto>.GetCreated(TreatmentMapper.GetDtoFromModel(model));
         }
@@ -71,39 +72,90 @@ namespace Treatment.Monitor.BusinessLogic.Services
                 return ServiceActionResult<TreatmentDto>.GetNotFound($"No treatment found by ID {id}");
             }
 
-            var model = TreatmentMapper.GetModelFromDto(dto);
-            await _treatmentRepository.UpdateAsync(id, model);
+            var model = await _treatmentRepository.GetByIdAsync(id);
+            if (model == null)
+            {
+                return ServiceActionResult<TreatmentDto>.GetNotFound($"No treatment found by ID {id}");
+            }
+            
+            RemoveNotificationJobsForTreatment(model, dto);
 
-            // TODO: Update recurring jobs
+            model = TreatmentMapper.GetModelFromDto(dto);
+            UpdateNotificationJobs(model);
+            await _treatmentRepository.UpdateAsync(id, model);
 
             return ServiceActionResult<TreatmentDto>.GetCreated(TreatmentMapper.GetDtoFromModel(model));
         }
 
-        private static void UpdateRecurringJobs(string treatmentId, string medicineId, string cronExpression)
+        private static void RemoveNotificationJobsForTreatment(TreatmentModel treatment, TreatmentDto dto)
         {
-            RecurringJob.AddOrUpdate<INotificationHandler>(
-                medicineId,
-                o => o.HandleAsync(
-                    new NotificationExecutionContext
-                    {
-                        MedicineId = medicineId,
-                        TreatmentId = treatmentId
-                    },
-                    null),
-                cronExpression,
-                TimeZoneInfo.Local);
+            var modelMedicines = treatment.MedicineApplications ?? new List<MedicineApplication>();
+            var dtoMedicines = dto.Medicines ?? new List<MedicineApplicationDto>();
+            var dtoMedicinesIds = dtoMedicines
+                .Where(x => !string.IsNullOrWhiteSpace(x.Id))
+                .Select(x => x.Id)
+                .ToList();
+
+            var toBeRemoved = modelMedicines
+                .Where(x => !dtoMedicinesIds.Contains(x.Id))
+                .ToList();
+
+            RemoveNotificationJobs(toBeRemoved.Select(x => x.Id));
+        }
+        
+        private static void RemoveNotificationJobs(IEnumerable<string> medicineIds)
+        {
+            foreach (var medicineId in medicineIds)
+            {
+                RecurringJob.RemoveIfExists(medicineId);
+            }
+        }
+        
+        private static void UpdateNotificationJobs(TreatmentModel treatment)
+        {
+            var isWindows = Environment.OSVersion.Platform is PlatformID.Win32S 
+                or PlatformID.Win32Windows
+                or PlatformID.Win32NT
+                or PlatformID.WinCE;
+            var timezone = isWindows 
+                ? TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time")
+                : TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw");
+
+            foreach (var treatmentMedicineApplication in treatment.MedicineApplications ?? new List<MedicineApplication>())
+            {
+                var cronExpression = new CronExpressionBuilder()
+                    .WithHour(treatmentMedicineApplication.StartDate.Hour)
+                    .WithMinute(treatmentMedicineApplication.StartDate.Minute)
+                    .BuildExpression();
+                
+                RecurringJob.AddOrUpdate<INotificationHandler>(
+                    treatmentMedicineApplication.Id,
+                    o => o.HandleAsync(
+                        new NotificationExecutionContext
+                        {
+                            MedicineId = treatmentMedicineApplication.Id,
+                            TreatmentId = treatment.Id
+                        },
+                        null),
+                    cronExpression,
+                    timezone);
+            }
         }
 
         public async Task<IServiceActionResult> DeleteAsync(string id)
         {
-            if (!await _treatmentRepository.ExistsAsync(Filter<TreatmentModel>.GetFilterById(id)))
+            var model = await _treatmentRepository.GetByIdAsync(id);
+            if (model == null)
             {
                 return ServiceActionResult.GetNotFound($"No treatment found by ID {id}");
             }
 
-            await _treatmentRepository.DeleteAsync(id);
+            var medicines = model.MedicineApplications ?? new List<MedicineApplication>();
+            var ids = medicines.Select(x => x.Id);
 
-            // TODO: Update recurring jobs
+            RemoveNotificationJobs(ids);
+
+            await _treatmentRepository.DeleteAsync(id);
 
             return ServiceActionResult.GetSuccess();
         }

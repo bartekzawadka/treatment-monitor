@@ -1,4 +1,4 @@
-namespace Treatment.Monitor.Notifier.Configuration
+namespace Treatment.Monitor.Configuration.Settings
 {
     public class EmailConfiguration
     {

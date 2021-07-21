@@ -1,6 +1,12 @@
 using System;
+using Hangfire;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies;
+using Hangfire.Mongo.Migration.Strategies.Backup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
+using Treatment.Monitor.Configuration.JobActivation;
 using Treatment.Monitor.Configuration.Settings;
 
 namespace Treatment.Monitor.Configuration.Extensions
@@ -31,6 +37,47 @@ namespace Treatment.Monitor.Configuration.Extensions
         {
             TInterface obj = configuration.GetObjectFromConfigurationSection<TSection, TInterface>(sectionName);
             return serviceCollection.AddSingleton(obj);
+        }
+
+        public static IServiceCollection AddHangfireConfiguration(
+            this IServiceCollection serviceCollection,
+            IConfiguration configuration,
+            bool addServer,
+            string serverName)
+        {
+            var mongoClient = new MongoClient(EnvironmentConfiguration.GetDbConnectionString(configuration));
+            var jobsDatabase = $"{Consts.DatabaseName}-jobs";
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+
+            var mongoStorageOptions = new MongoStorageOptions
+            {
+                MigrationOptions = new MongoMigrationOptions
+                {
+                    MigrationStrategy = new MigrateMongoMigrationStrategy(),
+                    BackupStrategy = new CollectionMongoBackupStrategy()
+                },
+                Prefix = "notifier",
+                CheckConnection = true
+            };
+            var mongoStorage = new MongoStorage(mongoClient, jobsDatabase, mongoStorageOptions);
+
+            serviceCollection.AddHangfire(config => config
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseColouredConsoleLogProvider()
+                .UseActivator(new ContainerJobActivator(serviceProvider.GetRequiredService<IServiceScopeFactory>()))
+                .UseSerilogLogProvider()
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseMongoStorage(mongoClient, jobsDatabase, mongoStorageOptions));
+            JobStorage.Current = mongoStorage;
+
+            if (addServer)
+            {
+                serviceCollection.AddHangfireServer(options => options.ServerName = serverName);
+            }
+
+            return serviceCollection;
         }
     }
 }

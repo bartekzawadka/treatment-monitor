@@ -9,8 +9,6 @@ namespace Treatment.Monitor.DataLayer.Models
 
         public string Name { get; set; }
 
-        public string CronExpression { get; set; }
-
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime StartDate { get; set; }
 

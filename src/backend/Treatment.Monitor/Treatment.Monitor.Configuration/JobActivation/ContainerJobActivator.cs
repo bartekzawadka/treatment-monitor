@@ -3,7 +3,7 @@ using Hangfire;
 using Hangfire.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Treatment.Monitor.Notifier.JobActivation
+namespace Treatment.Monitor.Configuration.JobActivation
 {
     public class ContainerJobActivator : JobActivator
     {

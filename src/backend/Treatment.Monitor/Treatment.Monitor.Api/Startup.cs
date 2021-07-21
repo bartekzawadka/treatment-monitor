@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -6,12 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using Treatment.Monitor.BusinessLogic.Services;
-using Treatment.Monitor.Configuration;
 using Treatment.Monitor.Configuration.Extensions;
 using Treatment.Monitor.Configuration.Settings;
 using Treatment.Monitor.DataLayer;
 using Treatment.Monitor.DataLayer.Repositories;
-using Treatment.Monitor.DataLayer.Sys;
 using Treatment.Monitor.Extensions;
 using Treatment.Monitor.Filters;
 using TreatmentModel = Treatment.Monitor.DataLayer.Models.Treatment;
@@ -41,6 +38,7 @@ namespace Treatment.Monitor
 
             services.AddSingletonDbContext(Configuration, s => new TreatmentMonitorContext(s));
             services.AddSecuritySettings(Configuration);
+            services.AddHangfireConfiguration(Configuration, false, string.Empty);
 
             services.AddControllers(options => { options.Filters.Add<ServiceActionFilter>(); });
 
