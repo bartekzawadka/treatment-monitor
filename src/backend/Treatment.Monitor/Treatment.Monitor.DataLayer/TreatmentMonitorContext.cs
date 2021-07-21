@@ -1,5 +1,5 @@
 using MongoDB.Driver;
-using Treatment.Monitor.DataLayer.Sys;
+using Treatment.Monitor.Configuration;
 
 namespace Treatment.Monitor.DataLayer
 {

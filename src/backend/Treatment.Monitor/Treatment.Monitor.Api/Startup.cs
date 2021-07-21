@@ -5,8 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
-using Treatment.Monitor.BusinessLogic.Configuration;
 using Treatment.Monitor.BusinessLogic.Services;
+using Treatment.Monitor.Configuration;
+using Treatment.Monitor.Configuration.Extensions;
+using Treatment.Monitor.Configuration.Settings;
 using Treatment.Monitor.DataLayer;
 using Treatment.Monitor.DataLayer.Repositories;
 using Treatment.Monitor.DataLayer.Sys;
@@ -37,15 +39,7 @@ namespace Treatment.Monitor
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
 
-            var connectionString = Configuration.GetConnectionString(Consts.DatabaseName);
-            var connectionStringVar = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
-            if (!string.IsNullOrWhiteSpace(connectionStringVar))
-            {
-                connectionString = connectionStringVar;
-            }
-
-            var context = new TreatmentMonitorContext(connectionString);
-            services.AddSingleton(context);
+            services.AddSingletonDbContext(Configuration, s => new TreatmentMonitorContext(s));
 
             IConfigurationSection securityConfigSection = Configuration.GetSection(nameof(SecuritySettings));
             var securitySettings = securityConfigSection.Get<SecuritySettings>();

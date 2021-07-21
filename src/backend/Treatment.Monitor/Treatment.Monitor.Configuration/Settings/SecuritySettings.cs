@@ -1,4 +1,4 @@
-namespace Treatment.Monitor.BusinessLogic.Configuration
+namespace Treatment.Monitor.Configuration.Settings
 {
     public class SecuritySettings : ISecuritySettings
     {
