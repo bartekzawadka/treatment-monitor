@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using Treatment.Monitor.BusinessLogic.Dto;
 using Treatment.Monitor.BusinessLogic.Mappers;
+using Treatment.Monitor.BusinessLogic.Notifier;
 using Treatment.Monitor.BusinessLogic.ServiceAction;
 using Treatment.Monitor.DataLayer.Repositories;
 using Treatment.Monitor.DataLayer.Sys;
@@ -50,6 +53,9 @@ namespace Treatment.Monitor.BusinessLogic.Services
             var model = TreatmentModel.Create(dto.Name, medicinesModel);
 
             await _treatmentRepository.InsertAsync(model);
+
+            // TODO: Update recurring jobs
+
             return ServiceActionResult<TreatmentDto>.GetCreated(TreatmentMapper.GetDtoFromModel(model));
         }
 
@@ -67,7 +73,25 @@ namespace Treatment.Monitor.BusinessLogic.Services
 
             var model = TreatmentMapper.GetModelFromDto(dto);
             await _treatmentRepository.UpdateAsync(id, model);
+
+            // TODO: Update recurring jobs
+
             return ServiceActionResult<TreatmentDto>.GetCreated(TreatmentMapper.GetDtoFromModel(model));
+        }
+
+        private static void UpdateRecurringJobs(string treatmentId, string medicineId, string cronExpression)
+        {
+            RecurringJob.AddOrUpdate<INotificationHandler>(
+                medicineId,
+                o => o.HandleAsync(
+                    new NotificationExecutionContext
+                    {
+                        MedicineId = medicineId,
+                        TreatmentId = treatmentId
+                    },
+                    null),
+                cronExpression,
+                TimeZoneInfo.Local);
         }
 
         public async Task<IServiceActionResult> DeleteAsync(string id)
@@ -78,6 +102,9 @@ namespace Treatment.Monitor.BusinessLogic.Services
             }
 
             await _treatmentRepository.DeleteAsync(id);
+
+            // TODO: Update recurring jobs
+
             return ServiceActionResult.GetSuccess();
         }
     }
