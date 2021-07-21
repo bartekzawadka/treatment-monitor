@@ -1,9 +1,13 @@
 <mat-list class="content-container" *ngIf="treatments && treatments.length > 0">
+  <mat-list-item *ngFor="let treatment of treatments">
+    <h3 mat-line>{{treatment.name}}</h3>
+    <mat-divider></mat-divider>
+  </mat-list-item>
 </mat-list>
 
-<div class="centered-container" *ngIf="!treatments || treatments.length === 0">
+<div class="centered-container mat-subheading-2" *ngIf="!treatments || treatments.length === 0">
   <h2 class="background-notification-text">No treatments defined yet!</h2>
-  <button mat-raised-button class="center" color="accent">
+  <button mat-raised-button class="center" color="accent" routerLink="/treatment">
     <mat-icon>add</mat-icon>
     Create a new one
   </button>

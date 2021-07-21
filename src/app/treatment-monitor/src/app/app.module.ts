@@ -12,6 +12,8 @@ import {MessageDialogComponent} from "./dialogs/message-dialog/message-dialog.co
 import {LoaderDialogComponent} from "./dialogs/loader-dialog/loader-dialog.component";
 import {ConfirmationDialogComponent} from "./dialogs/confirmation-dialog/confirmation-dialog.component";
 import { TreatmentsListComponent } from './pages/treatments-list/treatments-list.component';
+import { TreatmentComponent } from './pages/treatment/treatment.component';
+import { TreatmentMedicineComponent } from './pages/treatment-medicine/treatment-medicine.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,9 @@ import { TreatmentsListComponent } from './pages/treatments-list/treatments-list
     LoaderDialogComponent,
     MessageDialogComponent,
     ConfirmationDialogComponent,
-    TreatmentsListComponent
+    TreatmentsListComponent,
+    TreatmentComponent,
+    TreatmentMedicineComponent
   ],
   imports: [
     BrowserModule,

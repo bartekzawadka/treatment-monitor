@@ -1,0 +1,21 @@
+<div class="content-container">
+<h2 class="mat-h2">New treatment</h2>
+<form class="mat-elevation-z1 form-content">
+  <mat-form-field>
+    <input matInput name="name" placeholder="Name">
+  </mat-form-field>
+  <div class="flex-container">
+    <mat-form-field class="flex-item">
+      <mat-label>Start date</mat-label>
+      <input matInput [matDatepicker]="startDatePicker">
+      <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #startDatePicker></mat-datepicker>
+    </mat-form-field>
+    <mat-slide-toggle>Terminated</mat-slide-toggle>
+  </div>
+  <button mat-raised-button color="primary" (click)="addMedicine()">
+    <mat-icon>add</mat-icon>
+    Add medicine
+  </button>
+</form>
+</div>

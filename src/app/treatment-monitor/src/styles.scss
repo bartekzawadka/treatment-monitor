@@ -53,3 +53,11 @@ body { margin: 0; }
   margin-left: auto;
   margin-right: auto;
 }
+
+.flex-container{
+  display: flex;
+}
+
+.flex-item {
+  flex: 1 auto;
+}
