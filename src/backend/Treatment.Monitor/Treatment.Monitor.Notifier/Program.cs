@@ -1,5 +1,4 @@
-﻿using System;
-using Hangfire;
+﻿using Hangfire;
 using Hangfire.Mongo;
 using Hangfire.Mongo.Migration.Strategies;
 using Hangfire.Mongo.Migration.Strategies.Backup;
@@ -8,9 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using Serilog;
+using Treatment.Monitor.BusinessLogic.Notifier;
 using Treatment.Monitor.Configuration;
 using Treatment.Monitor.Configuration.Extensions;
 using Treatment.Monitor.DataLayer;
+using Treatment.Monitor.Notifier.JobActivation;
 
 namespace Treatment.Monitor.Notifier
 {
@@ -41,13 +42,18 @@ namespace Treatment.Monitor.Notifier
                     IConfiguration configuration = context.Configuration;
                     services.AddSingleton(configuration);
 
+                    services.AddScoped<INotificationHandler, NotificationHandler>();
+
                     services.AddSingletonDbContext(configuration, s => new TreatmentMonitorContext(s));
                     var mongoClient = new MongoClient(EnvironmentConfiguration.GetDbConnectionString(configuration));
                     var jobsDatabase = $"{Consts.DatabaseName}-jobs";
 
+                    var serviceProvider = services.BuildServiceProvider();
+
                     services.AddHangfire(config => config
                         .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                         .UseColouredConsoleLogProvider()
+                        .UseActivator(new ContainerJobActivator(serviceProvider.GetRequiredService<IServiceScopeFactory>()))
                         .UseSerilogLogProvider()
                         .UseSimpleAssemblyNameTypeSerializer()
                         .UseRecommendedSerializerSettings()

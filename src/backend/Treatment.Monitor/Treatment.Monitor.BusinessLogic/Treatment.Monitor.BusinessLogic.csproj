@@ -9,7 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Configuration" />
+      <PackageReference Include="Hangfire.Core" Version="1.7.24" />
     </ItemGroup>
 
 </Project>

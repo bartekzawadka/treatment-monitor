@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Treatment.Monitor.BusinessLogic\Treatment.Monitor.BusinessLogic.csproj" />
       <ProjectReference Include="..\Treatment.Monitor.Configuration\Treatment.Monitor.Configuration.csproj" />
       <ProjectReference Include="..\Treatment.Monitor.DataLayer\Treatment.Monitor.DataLayer.csproj" />
     </ItemGroup>
