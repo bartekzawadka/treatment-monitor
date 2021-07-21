@@ -48,7 +48,7 @@ class Build : NukeBuild
                 DeleteDirectory(nodeModulesPath);
             }
 
-            var distPath = AppDirectory / "www";
+            var distPath = AppDirectory / "dist";
             if (Directory.Exists(distPath))
             {
                 Directory.Delete(distPath);
@@ -89,6 +89,12 @@ class Build : NukeBuild
                     .SetProjectFile(Solution.GetProject("Treatment.Monitor.Api")?.Path)
                     .SetConfiguration(Configuration)
                     .SetVerbosity(DotNetVerbosity.Minimal));
+
+            DotNetTasks.DotNetBuild(settings =>
+                settings
+                    .SetProjectFile(Solution.GetProject("Treatment.Monitor.Notifier")?.Path)
+                    .SetConfiguration(Configuration)
+                    .SetVerbosity(DotNetVerbosity.Minimal));
         });
 
     Target Publish => _ => _
@@ -113,5 +119,14 @@ class Build : NukeBuild
                     .SetRuntime("linux-x64")
                     .SetProject(Solution.GetProject("Treatment.Monitor.Api"))
                     .SetOutput(PublishDirectory / "api"));
+
+            DotNetTasks.DotNetPublish(settings =>
+                settings
+                    .SetConfiguration(Configuration)
+                    .SetVerbosity(DotNetVerbosity.Minimal)
+                    .SetFramework("net5.0")
+                    .SetRuntime("linux-x64")
+                    .SetProject(Solution.GetProject("Treatment.Monitor.Notifier"))
+                    .SetOutput(PublishDirectory / "notifier"));
         });
 }

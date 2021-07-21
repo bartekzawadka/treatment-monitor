@@ -19,11 +19,18 @@ namespace Treatment.Monitor.Configuration.Extensions
 
         public static IServiceCollection AddSecuritySettings(
             this IServiceCollection serviceCollection,
-            IConfiguration configuration)
+            IConfiguration configuration) =>
+            serviceCollection.AddSingletonFromConfiguration<SecuritySettings, ISecuritySettings>(configuration);
+
+        public static IServiceCollection AddSingletonFromConfiguration<TSection, TInterface>(
+            this IServiceCollection serviceCollection,
+            IConfiguration configuration,
+            string sectionName = null)
+            where TSection : TInterface
+            where TInterface : class
         {
-            IConfigurationSection securityConfigSection = configuration.GetSection(nameof(SecuritySettings));
-            var securitySettings = securityConfigSection.Get<SecuritySettings>();
-            return serviceCollection.AddSingleton<ISecuritySettings>(securitySettings);
+            TInterface obj = configuration.GetObjectFromConfigurationSection<TSection, TInterface>(sectionName);
+            return serviceCollection.AddSingleton(obj);
         }
     }
 }

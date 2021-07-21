@@ -40,10 +40,7 @@ namespace Treatment.Monitor
                 });
 
             services.AddSingletonDbContext(Configuration, s => new TreatmentMonitorContext(s));
-
-            IConfigurationSection securityConfigSection = Configuration.GetSection(nameof(SecuritySettings));
-            var securitySettings = securityConfigSection.Get<SecuritySettings>();
-            services.AddSingleton<ISecuritySettings>(securitySettings);
+            services.AddSecuritySettings(Configuration);
 
             services.AddControllers(options => { options.Filters.Add<ServiceActionFilter>(); });
 

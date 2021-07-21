@@ -11,6 +11,7 @@ using Treatment.Monitor.BusinessLogic.Notifier;
 using Treatment.Monitor.Configuration;
 using Treatment.Monitor.Configuration.Extensions;
 using Treatment.Monitor.DataLayer;
+using Treatment.Monitor.Notifier.Configuration;
 using Treatment.Monitor.Notifier.JobActivation;
 
 namespace Treatment.Monitor.Notifier
@@ -44,6 +45,10 @@ namespace Treatment.Monitor.Notifier
 
                     services.AddScoped<INotificationHandler, NotificationHandler>();
 
+                    var emailConfiguration = configuration.GetObjectFromConfigurationSection<EmailConfiguration, EmailConfiguration>();
+                    UpdateConfigBasedOnEnvVars(emailConfiguration);
+                    services.AddSingleton(emailConfiguration);
+
                     services.AddSingletonDbContext(configuration, s => new TreatmentMonitorContext(s));
                     var mongoClient = new MongoClient(EnvironmentConfiguration.GetDbConnectionString(configuration));
                     var jobsDatabase = $"{Consts.DatabaseName}-jobs";
@@ -71,5 +76,18 @@ namespace Treatment.Monitor.Notifier
                     services.AddHangfireServer(options => options.ServerName = "Treatment.Monitor.Notifier server");
                     services.AddHostedService<JobWorker>();
                 });
+
+        private static void UpdateConfigBasedOnEnvVars(EmailConfiguration emailConfiguration)
+        {
+            EnvironmentConfiguration.SetValueFromEnvVar<EmailConfiguration, string>(emailConfiguration, configuration => configuration.Password, "NOTIFIER_EMAIL_PASSWORD");
+            EnvironmentConfiguration.SetValueFromEnvVar<EmailConfiguration, int>(emailConfiguration, configuration => configuration.Port, "NOTIFIER_EMAIL_PORT");
+            EnvironmentConfiguration.SetValueFromEnvVar<EmailConfiguration, string>(emailConfiguration, configuration => configuration.Server, "NOTIFIER_EMAIL_SERVER");
+            EnvironmentConfiguration.SetValueFromEnvVar<EmailConfiguration, string>(emailConfiguration, configuration => configuration.To, "NOTIFIER_EMAIL_TO");
+            EnvironmentConfiguration.SetValueFromEnvVar<EmailConfiguration, string>(emailConfiguration, configuration => configuration.Username, "NOTIFIER_EMAIL_USERNAME");
+            EnvironmentConfiguration.SetValueFromEnvVar<EmailConfiguration, string>(emailConfiguration, configuration => configuration.AppEndpoint, "NOTIFIER_EMAIL_APP_ENDPOINT");
+            EnvironmentConfiguration.SetValueFromEnvVar<EmailConfiguration, string>(emailConfiguration, configuration => configuration.FromAddress, "NOTIFIER_EMAIL_FROM_ADDRESS");
+            EnvironmentConfiguration.SetValueFromEnvVar<EmailConfiguration, string>(emailConfiguration, configuration => configuration.FromName, "NOTIFIER_EMAIL_FROM_NAME");
+            EnvironmentConfiguration.SetValueFromEnvVar<EmailConfiguration, bool>(emailConfiguration, configuration => configuration.UseSsl, "NOTIFIER_EMAIL_USE_SSL");
+        }
     }
 }
