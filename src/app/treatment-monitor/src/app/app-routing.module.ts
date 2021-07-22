@@ -14,6 +14,10 @@ const routes: Routes = [
     component: TreatmentComponent
   },
   {
+    path: 'treatment/:id',
+    component: TreatmentComponent
+  },
+  {
     path: 'treatments',
     component: TreatmentsListComponent
   }

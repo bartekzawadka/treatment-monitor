@@ -1,9 +1,26 @@
-<mat-list class="content-container" *ngIf="treatments && treatments.length > 0">
-  <mat-list-item *ngFor="let treatment of treatments">
-    <h3 mat-line>{{treatment.name}}</h3>
-    <mat-divider></mat-divider>
-  </mat-list-item>
-</mat-list>
+<div class="content-container" *ngIf="treatments && treatments.length > 0">
+  <div class="flex-container">
+    <span class="flex-item"></span>
+    <button mat-raised-button color="accent" routerLink="/treatment">
+      <mat-icon>add</mat-icon>
+      Add
+    </button>
+  </div>
+  <mat-list class="mat-elevation-z2 margin-top">
+    <mat-list-item *ngFor="let treatment of treatments">
+      <h3 mat-line>{{treatment.name}}</h3>
+      <p mat-line class="background-notification-text">{{treatment.startDate | date:"dd.MM.yyyy HH:mm"}}</p>
+      <span class="spacer"></span>
+      <button mat-icon-button color="primary" matTooltip="Edit" [routerLink]="'/treatment/' + treatment.id">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteTreatment(treatment)">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <mat-divider></mat-divider>
+    </mat-list-item>
+  </mat-list>
+</div>
 
 <div class="centered-container mat-subheading-2" *ngIf="!treatments || treatments.length === 0">
   <h2 class="background-notification-text">No treatments defined yet!</h2>

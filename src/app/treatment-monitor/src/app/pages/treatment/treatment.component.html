@@ -1,21 +1,57 @@
 <div class="content-container">
-<h2 class="mat-h2">New treatment</h2>
+<h2 class="mat-h2" *ngIf="!model.id">New treatment</h2>
+  <h2 class="mat-h2" *ngIf="model.id">Editing treatment</h2>
 <form class="mat-elevation-z1 form-content">
   <mat-form-field>
-    <input matInput name="name" placeholder="Name">
+    <input matInput name="name" placeholder="Name" [(ngModel)]="model.name">
   </mat-form-field>
   <div class="flex-container">
     <mat-form-field class="flex-item">
-      <mat-label>Start date</mat-label>
-      <input matInput [matDatepicker]="startDatePicker">
-      <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-      <mat-datepicker #startDatePicker></mat-datepicker>
+      <input name="startDate" matInput [ngxMatDatetimePicker]="picker"
+             placeholder="Start date and time" [(ngModel)]="model.startDate">
+      <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #picker [showSeconds]="false">
+      </ngx-mat-datetime-picker>
     </mat-form-field>
-    <mat-slide-toggle>Terminated</mat-slide-toggle>
+    <mat-slide-toggle name="terminated" [(ngModel)]="model.terminated">Terminated</mat-slide-toggle>
   </div>
-  <button mat-raised-button color="primary" (click)="addMedicine()">
-    <mat-icon>add</mat-icon>
-    Add medicine
-  </button>
+  <mat-divider></mat-divider>
+  <div class="flex-container padding-top">
+    <span class="flex-item"></span>
+    <button mat-raised-button color="primary" (click)="addMedicine()">
+      <mat-icon>add</mat-icon>
+      Add medicine
+    </button>
+  </div>
+  <div class="padding-top" *ngIf="model.medicines && model.medicines.length > 0">
+    <mat-list class="mat-elevation-z1">
+      <div mat-subheader>List of medicines</div>
+      <mat-list-item *ngFor="let medicine of model.medicines;let i = index">
+        <h2 mat-line>{{medicine.name}}</h2>
+        <p mat-line class="list-element-sub-header ">
+          Starting at {{medicine.startDate | date:"dd.MM.yyyy HH:mm"}} for {{medicine.numberOfDays}} day(s)
+        </p>
+        <span class="spacer"></span>
+        <button mat-icon-button color="primary" matTooltip="Edit" (click)="editMedicine(medicine)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" matTooltip="Remove" (click)="removeMedicine(i)">
+          <mat-icon>cancel</mat-icon>
+        </button>
+        <mat-divider></mat-divider>
+      </mat-list-item>
+    </mat-list>
+  </div>
 </form>
+  <div class="flex-container padding-top">
+    <button mat-raised-button (click)="cancel()">
+      <mat-icon>close</mat-icon>
+      Cancel
+    </button>
+    <span class="spacer"></span>
+    <button mat-raised-button color="accent" [disabled]="!canSave()" (click)="save()">
+      <mat-icon>save</mat-icon>
+      Save
+    </button>
+  </div>
 </div>

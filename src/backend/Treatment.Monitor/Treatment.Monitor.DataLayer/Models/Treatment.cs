@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Treatment.Monitor.DataLayer.Models
 {
     public class Treatment : Document
     {
         public string Name { get; set; }
-
-        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
-        public DateTime StartDate { get; private set; }
+        
+        public DateTime StartDate { get; set; }
 
         public bool Terminated { get; set; }
 

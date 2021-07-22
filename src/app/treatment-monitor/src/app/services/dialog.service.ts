@@ -3,6 +3,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {Observable} from "rxjs";
 import {LoaderDialogComponent} from "../dialogs/loader-dialog/loader-dialog.component";
 import {MessageDialogComponent} from "../dialogs/message-dialog/message-dialog.component";
+import {ConfirmationDialogComponent} from "../dialogs/confirmation-dialog/confirmation-dialog.component";
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class DialogService {
       });
     });
   }
-  
+
   showMessage(title: string, message: string, type: string, messageClosed?: () => void): void {
     const dRef = this.dialog.open(MessageDialogComponent, {
       disableClose: true,
@@ -45,5 +46,24 @@ export class DialogService {
         messageClosed();
       }
     });
+  }
+
+  showConfirmation(title: string, message: string, messageClosed?: (result: boolean) => void): void {
+    const dRef = this.dialog.open(ConfirmationDialogComponent, {
+      disableClose: true,
+      data: {
+        title,
+        message
+      }
+    });
+    dRef.afterClosed().subscribe((result) => {
+      if (messageClosed) {
+        messageClosed(result);
+      }
+    });
+  }
+
+  closeAll(): void {
+    this.dialog.closeAll();
   }
 }

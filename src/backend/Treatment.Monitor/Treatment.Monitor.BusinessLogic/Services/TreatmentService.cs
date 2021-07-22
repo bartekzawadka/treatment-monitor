@@ -80,7 +80,7 @@ namespace Treatment.Monitor.BusinessLogic.Services
             
             RemoveNotificationJobsForTreatment(model, dto);
 
-            model = TreatmentMapper.GetModelFromDto(dto);
+            model = TreatmentMapper.GetModelFromDto(dto, GetTimeZoneInfo());
             UpdateNotificationJobs(model);
             await _treatmentRepository.UpdateAsync(id, model);
 
@@ -113,19 +113,14 @@ namespace Treatment.Monitor.BusinessLogic.Services
         
         private static void UpdateNotificationJobs(TreatmentModel treatment)
         {
-            var isWindows = Environment.OSVersion.Platform is PlatformID.Win32S 
-                or PlatformID.Win32Windows
-                or PlatformID.Win32NT
-                or PlatformID.WinCE;
-            var timezone = isWindows 
-                ? TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time")
-                : TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw");
+            var timezone = GetTimeZoneInfo();
 
             foreach (var treatmentMedicineApplication in treatment.MedicineApplications ?? new List<MedicineApplication>())
             {
+                var date = TimeZoneInfo.ConvertTimeFromUtc(treatmentMedicineApplication.StartDate, timezone);
                 var cronExpression = new CronExpressionBuilder()
-                    .WithHour(treatmentMedicineApplication.StartDate.Hour)
-                    .WithMinute(treatmentMedicineApplication.StartDate.Minute)
+                    .WithHour(date.Hour)
+                    .WithMinute(date.Minute)
                     .BuildExpression();
                 
                 RecurringJob.AddOrUpdate<INotificationHandler>(
@@ -158,6 +153,17 @@ namespace Treatment.Monitor.BusinessLogic.Services
             await _treatmentRepository.DeleteAsync(id);
 
             return ServiceActionResult.GetSuccess();
+        }
+
+        private static TimeZoneInfo GetTimeZoneInfo()
+        {
+            var isWindows = Environment.OSVersion.Platform is PlatformID.Win32S 
+                or PlatformID.Win32Windows
+                or PlatformID.Win32NT
+                or PlatformID.WinCE;
+            return isWindows 
+                ? TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time")
+                : TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw");
         }
     }
 }

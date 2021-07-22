@@ -22,6 +22,12 @@ import {MatNativeDateModule} from "@angular/material/core";
 import {MatTabsModule} from "@angular/material/tabs";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatButtonModule} from "@angular/material/button";
+import {
+  NgxMatDatetimePickerModule,
+  NgxMatNativeDateModule,
+  NgxMatTimepickerModule
+} from "@angular-material-components/datetime-picker";
+import {MatExpansionModule} from "@angular/material/expansion";
 
 const materialComponents = [
   CommonModule,
@@ -30,7 +36,11 @@ const materialComponents = [
   MatInputModule, MatListModule, MatDialogModule, MatCheckboxModule,
   MatProgressSpinnerModule, MatButtonModule, MatSelectModule, MatDatepickerModule,
   MatNativeDateModule, MatTabsModule, MatTableModule, MatChipsModule, MatPaginatorModule,
-  MatTooltipModule, MatAutocompleteModule, MatSlideToggleModule
+  MatTooltipModule, MatAutocompleteModule, MatSlideToggleModule,
+  NgxMatDatetimePickerModule,
+  NgxMatTimepickerModule,
+  NgxMatNativeDateModule,
+  MatExpansionModule
 ];
 
 @NgModule({

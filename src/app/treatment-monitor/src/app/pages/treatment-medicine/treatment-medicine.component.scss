@@ -1,4 +1,7 @@
 .dialog-form-container {
-  display: flex;
   min-width: 30vw;
+}
+
+mat-form-field {
+  width: 100%;
 }

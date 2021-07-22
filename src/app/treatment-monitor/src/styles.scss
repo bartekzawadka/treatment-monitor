@@ -61,3 +61,38 @@ body { margin: 0; }
 .flex-item {
   flex: 1 auto;
 }
+
+.float-right {
+  float: right;
+}
+
+.padding-top {
+  padding-top: 16px;
+}
+
+.margin-bottom {
+  margin-bottom: 16px;
+}
+
+.margin-top {
+  margin-top: 16px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.list-element-sub-header {
+  color: #777;
+  font-size: 13px !important;
+}

@@ -14,6 +14,7 @@ import {ConfirmationDialogComponent} from "./dialogs/confirmation-dialog/confirm
 import { TreatmentsListComponent } from './pages/treatments-list/treatments-list.component';
 import { TreatmentComponent } from './pages/treatment/treatment.component';
 import { TreatmentMedicineComponent } from './pages/treatment-medicine/treatment-medicine.component';
+import '@angular/common/locales/global/pl';
 
 @NgModule({
   declarations: [
