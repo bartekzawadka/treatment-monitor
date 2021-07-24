@@ -64,8 +64,8 @@ jobs:
         inputs:
           repository: $(notifierImageName)
           command: build
-          buildContext: $(Build.SourcesDirectory)/src/api/Treatment.Monitor/Treatment.Monitor.Notifier/bin/$(BuildConfiguration)/net5.0
-          Dockerfile: $(Build.SourcesDirectory)/src/api/Treatment.Monitor/Treatment.Monitor.Notifier/Dockerfile
+          buildContext: $(Build.SourcesDirectory)/src/backend/Treatment.Monitor/Treatment.Monitor.Notifier/bin/$(BuildConfiguration)/net5.0
+          Dockerfile: $(Build.SourcesDirectory)/src/backend/Treatment.Monitor/Treatment.Monitor.Notifier/Dockerfile
           tags: |
             $(appVersion)
             latest
