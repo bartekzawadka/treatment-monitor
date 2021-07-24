@@ -80,7 +80,7 @@ namespace Treatment.Monitor.BusinessLogic.Services
             
             RemoveNotificationJobsForTreatment(model, dto);
 
-            model = TreatmentMapper.GetModelFromDto(dto, GetTimeZoneInfo());
+            model = TreatmentMapper.GetModelFromDto(dto);
             UpdateNotificationJobs(model);
             await _treatmentRepository.UpdateAsync(id, model);
 
@@ -117,7 +117,7 @@ namespace Treatment.Monitor.BusinessLogic.Services
 
             foreach (var treatmentMedicineApplication in treatment.MedicineApplications ?? new List<MedicineApplication>())
             {
-                var date = TimeZoneInfo.ConvertTimeFromUtc(treatmentMedicineApplication.StartDate, timezone);
+                var date = TimeZoneInfo.ConvertTimeFromUtc(treatmentMedicineApplication.StartDate.ToUniversalTime(), timezone);
                 var cronExpression = new CronExpressionBuilder()
                     .WithHour(date.Hour)
                     .WithMinute(date.Minute)

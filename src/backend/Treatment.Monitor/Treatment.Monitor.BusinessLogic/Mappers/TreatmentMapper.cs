@@ -37,12 +37,12 @@ namespace Treatment.Monitor.BusinessLogic.Mappers
                 NumberOfDays = model.NumberOfDays
             };
 
-        public static TreatmentModel GetModelFromDto(TreatmentDto dto, TimeZoneInfo timezone) =>
+        public static TreatmentModel GetModelFromDto(TreatmentDto dto) =>
             new()
             {
                 Id = dto.Id,
                 Name = dto.Name,
-                StartDate = dto.StartDate,//TimeZoneInfo.ConvertTimeFromUtc(dto.StartDate, timezone),
+                StartDate = dto.StartDate,
                 Terminated = dto.Terminated,
                 MedicineApplications = dto.Medicines?.Select(GetMedicineApplicationModelFromDto).ToList() ?? new List<MedicineApplication>()
             };
