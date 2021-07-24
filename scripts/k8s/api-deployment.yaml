@@ -23,7 +23,7 @@ spec:
         - name: treatment-monitor-api
           image: bartee/treatment-monitor-api:1.0.0
           ports:
-            - containerPort: 6000
+            - containerPort: 7000
               name: http
           env:
             - name: DB_CONNECTION_STRING

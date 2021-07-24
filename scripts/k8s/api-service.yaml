@@ -9,7 +9,7 @@ spec:
   ports:
     - port: 80
       protocol: TCP
-      targetPort: 6000
+      targetPort: 7000
   selector:
     app: treatment-monitor-api
   type: LoadBalancer
