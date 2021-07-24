@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
+using Treatment.Monitor.BusinessLogic.Mappers;
 using Treatment.Monitor.BusinessLogic.Services;
 using Treatment.Monitor.Configuration.Extensions;
 using Treatment.Monitor.Configuration.Settings;
@@ -36,6 +37,8 @@ namespace Treatment.Monitor
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
 
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+            services.AddSingleton<ITreatmentMapper, TreatmentMapper>();
             services.AddSingletonDbContext(Configuration, s => new TreatmentMonitorContext(s));
             services.AddSecuritySettings(Configuration);
             services.AddHangfireConfiguration(Configuration, false, string.Empty);

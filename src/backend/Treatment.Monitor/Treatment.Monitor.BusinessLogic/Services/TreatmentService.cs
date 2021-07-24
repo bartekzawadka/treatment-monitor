@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,10 +17,17 @@ namespace Treatment.Monitor.BusinessLogic.Services
     public class TreatmentService : ITreatmentService
     {
         private readonly IGenericRepository<TreatmentModel> _treatmentRepository;
+        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ITreatmentMapper _treatmentMapper;
 
-        public TreatmentService(IGenericRepository<TreatmentModel> treatmentRepository)
+        public TreatmentService(
+            IGenericRepository<TreatmentModel> treatmentRepository,
+            IDateTimeProvider dateTimeProvider,
+            ITreatmentMapper treatmentMapper)
         {
             _treatmentRepository = treatmentRepository;
+            _dateTimeProvider = dateTimeProvider;
+            _treatmentMapper = treatmentMapper;
         }
 
         public Task<List<TreatmentListItemDto>> GetListAsync() =>
@@ -47,13 +53,9 @@ namespace Treatment.Monitor.BusinessLogic.Services
             {
                 return ServiceActionResult<TreatmentDto>.GetDataError("Treatment already exists with provided ID");
             }
-
-            var medicines = dto.Medicines ?? new List<MedicineApplicationDto>();
-            var medicinesModel = medicines
-                .Select(TreatmentMapper.GetMedicineApplicationModelFromDto)
-                .ToList();
-            var model = TreatmentModel.Create(dto.Name, medicinesModel);
             
+            var model = _treatmentMapper.GetModelFromDto(dto);
+
             await _treatmentRepository.InsertAsync(model);
             UpdateNotificationJobs(model);
 
@@ -80,7 +82,7 @@ namespace Treatment.Monitor.BusinessLogic.Services
             
             RemoveNotificationJobsForTreatment(model, dto);
 
-            model = TreatmentMapper.GetModelFromDto(dto);
+            model = _treatmentMapper.GetModelFromDto(dto);
             UpdateNotificationJobs(model);
             await _treatmentRepository.UpdateAsync(id, model);
 
@@ -111,13 +113,11 @@ namespace Treatment.Monitor.BusinessLogic.Services
             }
         }
         
-        private static void UpdateNotificationJobs(TreatmentModel treatment)
+        private void UpdateNotificationJobs(TreatmentModel treatment)
         {
-            var timezone = GetTimeZoneInfo();
-
             foreach (var treatmentMedicineApplication in treatment.MedicineApplications ?? new List<MedicineApplication>())
             {
-                var date = TimeZoneInfo.ConvertTimeFromUtc(treatmentMedicineApplication.StartDate.ToUniversalTime(), timezone);
+                var date = _dateTimeProvider.ConvertDateToPolishTimeZone(treatmentMedicineApplication.StartDate);
                 var cronExpression = new CronExpressionBuilder()
                     .WithHour(date.Hour)
                     .WithMinute(date.Minute)
@@ -133,7 +133,7 @@ namespace Treatment.Monitor.BusinessLogic.Services
                         },
                         null),
                     cronExpression,
-                    timezone);
+                    _dateTimeProvider.GetTimeZoneInfo());
             }
         }
 
@@ -153,17 +153,6 @@ namespace Treatment.Monitor.BusinessLogic.Services
             await _treatmentRepository.DeleteAsync(id);
 
             return ServiceActionResult.GetSuccess();
-        }
-
-        private static TimeZoneInfo GetTimeZoneInfo()
-        {
-            var isWindows = Environment.OSVersion.Platform is PlatformID.Win32S 
-                or PlatformID.Win32Windows
-                or PlatformID.Win32NT
-                or PlatformID.WinCE;
-            return isWindows 
-                ? TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time")
-                : TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw");
         }
     }
 }

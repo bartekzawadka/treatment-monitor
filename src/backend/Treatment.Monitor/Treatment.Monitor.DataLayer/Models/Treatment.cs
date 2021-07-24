@@ -12,14 +12,5 @@ namespace Treatment.Monitor.DataLayer.Models
         public bool Terminated { get; set; }
 
         public ICollection<MedicineApplication> MedicineApplications { get; set; }
-
-        public static Treatment Create(string name, ICollection<MedicineApplication> medicines) =>
-            new Treatment
-            {
-                Name = name,
-                Terminated = false,
-                StartDate = DateTime.Now,
-                MedicineApplications = medicines
-            };
     }
 }
