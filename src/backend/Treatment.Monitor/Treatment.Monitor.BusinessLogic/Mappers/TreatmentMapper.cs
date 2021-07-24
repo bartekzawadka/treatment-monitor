@@ -23,7 +23,7 @@ namespace Treatment.Monitor.BusinessLogic.Mappers
                 Id = model.Id,
                 Name = model.Name,
                 Terminated = model.Terminated,
-                StartDate = model.StartDate
+                StartDate = model.StartDate.ToUniversalTime()
             };
 
         public static TreatmentDto GetDtoFromModel(TreatmentModel model) =>
@@ -32,7 +32,7 @@ namespace Treatment.Monitor.BusinessLogic.Mappers
                 Id = model.Id,
                 Name = model.Name,
                 Terminated = model.Terminated,
-                StartDate = model.StartDate,
+                StartDate = model.StartDate.ToUniversalTime(),
                 Medicines = model.MedicineApplications?.Select(GetMedicineApplicationDtoFromModel).ToList() ?? new List<MedicineApplicationDto>()
             };
 
@@ -41,7 +41,7 @@ namespace Treatment.Monitor.BusinessLogic.Mappers
             {
                 Id = model.Id,
                 Name = model.Name,
-                StartDate = model.StartDate,
+                StartDate = model.StartDate.ToUniversalTime(),
                 NumberOfDays = model.NumberOfDays
             };
 
