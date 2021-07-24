@@ -1,0 +1,72 @@
+name: 'Kubernetes release'
+trigger: none
+
+resources:
+  pipelines:
+  - pipeline: build   # Name of the pipeline resource
+    source: Build # Name of the pipeline referenced by the pipeline resource
+    project: Treatment Monitor  # Required only if the source pipeline is in another project
+    trigger:
+      branches:
+        include:
+          - refs/heads/main
+
+jobs:
+    - job: Release
+      displayName: 'Release all'
+      workspace: 
+        clean: all
+      pool:
+        name: Azure Pipelines
+        vmImage: ubuntu-20.04
+      steps:
+      - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+        displayName: 'Prepare secrets'
+        inputs:
+            rootDirectory: scripts
+            targetFiles: '**/secret.yaml'
+            writeBOM: false
+            tokenPrefix: '##{'
+            tokenSuffix: '}##'
+
+      - task: Kubernetes@1
+        displayName: 'Kubernetes apply secret'
+        inputs:
+          kubernetesServiceEndpoint: 'bz-kubernetes-cluster'
+          command: apply
+          arguments: '-f $(Build.SourcesDirectory)/scripts/k8s/secret.yaml'
+
+      - task: Kubernetes@1
+        displayName: 'Kubernetes apply API deployment'
+        inputs:
+          kubernetesServiceEndpoint: 'bz-kubernetes-cluster'
+          command: apply
+          arguments: '-f $(Build.SourcesDirectory)/scripts/k8s/api-deployment.yaml'
+
+      - task: Kubernetes@1
+        displayName: 'Kubernetes apply APP deployment'
+        inputs:
+          kubernetesServiceEndpoint: 'bz-kubernetes-cluster'
+          command: apply
+          arguments: '-f $(Build.SourcesDirectory)/scripts/k8s/app-deployment.yaml'
+
+      - task: Kubernetes@1
+        displayName: 'Kubernetes apply Notifier deployment'
+        inputs:
+          kubernetesServiceEndpoint: 'bz-kubernetes-cluster'
+          command: apply
+          arguments: '-f $(Build.SourcesDirectory)/scripts/k8s/notifier-deployment.yaml'
+
+      - task: Kubernetes@1
+        displayName: 'Kubernetes apply API service'
+        inputs:
+          kubernetesServiceEndpoint: 'bz-kubernetes-cluster'
+          command: apply
+          arguments: '-f $(Build.SourcesDirectory)/scripts/k8s/api-service.yaml'
+
+      - task: Kubernetes@1
+        displayName: 'Kubernetes apply APP service'
+        inputs:
+          kubernetesServiceEndpoint: 'bz-kubernetes-cluster'
+          command: apply
+          arguments: '-f $(Build.SourcesDirectory)/scripts/k8s/app-service.yaml'

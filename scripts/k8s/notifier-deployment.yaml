@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treatment-monitor-notifier-deployment
+  labels:
+    app: treatment-monitor-notifier
+  
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: treatment-monitor-notifier
+  template:
+    metadata:
+      labels:
+        app: treatment-monitor-notifier
+    spec:
+      containers:
+        - name: treatment-monitor-notifier
+          image: bartee/treatment-monitor-notifier:1.0.0
+          ports:
+            - containerPort: 6000
+              name: http
+          env:
+            - name: DB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: treatment-monitor-secret
+                  key: dbConnectionString
+            - name: NOTIFIER_EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: treatment-monitor-secret
+                  key: notifierEmailPassword
+            - name: NOTIFIER_EMAIL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: treatment-monitor-secret
+                  key: notifierEmailPort
+            - name: NOTIFIER_EMAIL_SERVER
+              valueFrom:
+                secretKeyRef:
+                  name: treatment-monitor-secret
+                  key: notifierEmailServer
+            - name: NOTIFIER_EMAIL_TO
+              valueFrom:
+                secretKeyRef:
+                  name: treatment-monitor-secret
+                  key: notifierEmailTo
+            - name: NOTIFIER_EMAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: treatment-monitor-secret
+                  key: notifierEmailUsername
+            - name: NOTIFIER_EMAIL_FROM_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: treatment-monitor-secret
+                  key: notifierEmailFromAddress
+            - name: NOTIFIER_EMAIL_FROM_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: treatment-monitor-secret
+                  key: notifierEmailFromName
+            - name: NOTIFIER_EMAIL_USE_SSL
+              valueFrom:
+                secretKeyRef:
+                  name: treatment-monitor-secret
+                  key: notifierEmailUseSsl

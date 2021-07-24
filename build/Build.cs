@@ -96,7 +96,7 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            AbsolutePath srcDir = AppDirectory / "dist";
+            AbsolutePath srcDir = AppDirectory / "dist" / "treatment-monitor";
             AbsolutePath destDir = PublishDirectory / "app";
 
             if (Directory.Exists(destDir))
