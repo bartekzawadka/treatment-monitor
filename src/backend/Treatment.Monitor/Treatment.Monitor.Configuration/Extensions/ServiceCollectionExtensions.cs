@@ -25,8 +25,17 @@ namespace Treatment.Monitor.Configuration.Extensions
 
         public static IServiceCollection AddSecuritySettings(
             this IServiceCollection serviceCollection,
-            IConfiguration configuration) =>
-            serviceCollection.AddSingletonFromConfiguration<SecuritySettings, ISecuritySettings>(configuration);
+            IConfiguration configuration)
+        {
+            var securitySettings = configuration.GetObjectFromConfigurationSection<SecuritySettings, ISecuritySettings>();
+            var appHost = Environment.GetEnvironmentVariable("APP_HOST");
+            if (!string.IsNullOrWhiteSpace(appHost))
+            {
+                securitySettings.AllowedHost = appHost;
+            }
+
+            return serviceCollection.AddSingleton(securitySettings);
+        }
 
         public static IServiceCollection AddSingletonFromConfiguration<TSection, TInterface>(
             this IServiceCollection serviceCollection,
