@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Treatment.Monitor.BusinessLogic.Email;
 using Treatment.Monitor.BusinessLogic.Notifier;
+using Treatment.Monitor.BusinessLogic.Services;
 using Treatment.Monitor.Configuration;
 using Treatment.Monitor.Configuration.Extensions;
 using Treatment.Monitor.Configuration.Settings;
@@ -41,6 +42,7 @@ namespace Treatment.Monitor.Notifier
                     services.AddSingleton(configuration);
 
                     services.AddSingleton<IGenericRepository<TreatmentModel>, GenericRepository<TreatmentModel>>();
+                    services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
                     services.AddScoped<INotificationHandler, NotificationHandler>();
 
                     var emailConfiguration = configuration.GetObjectFromConfigurationSection<EmailConfiguration, EmailConfiguration>();
