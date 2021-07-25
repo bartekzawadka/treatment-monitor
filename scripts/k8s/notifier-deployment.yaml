@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: treatment-monitor-notifier
-          image: bartee/treatment-monitor-notifier:1.0.3
+          image: bartee/treatment-monitor-notifier:1.0.4
           ports:
             - containerPort: 6000
               name: http
