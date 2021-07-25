@@ -18,16 +18,13 @@ namespace Treatment.Monitor.BusinessLogic.Services
     {
         private readonly IGenericRepository<TreatmentModel> _treatmentRepository;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly ITreatmentMapper _treatmentMapper;
 
         public TreatmentService(
             IGenericRepository<TreatmentModel> treatmentRepository,
-            IDateTimeProvider dateTimeProvider,
-            ITreatmentMapper treatmentMapper)
+            IDateTimeProvider dateTimeProvider)
         {
             _treatmentRepository = treatmentRepository;
             _dateTimeProvider = dateTimeProvider;
-            _treatmentMapper = treatmentMapper;
         }
 
         public Task<List<TreatmentListItemDto>> GetListAsync() =>
@@ -54,7 +51,7 @@ namespace Treatment.Monitor.BusinessLogic.Services
                 return ServiceActionResult<TreatmentDto>.GetDataError("Treatment already exists with provided ID");
             }
             
-            var model = _treatmentMapper.GetModelFromDto(dto);
+            var model = TreatmentMapper.GetModelFromDto(dto);
 
             await _treatmentRepository.InsertAsync(model);
             UpdateNotificationJobs(model);
@@ -82,7 +79,7 @@ namespace Treatment.Monitor.BusinessLogic.Services
             
             RemoveNotificationJobsForTreatment(model, dto);
 
-            model = _treatmentMapper.GetModelFromDto(dto);
+            model = TreatmentMapper.GetModelFromDto(dto);
             UpdateNotificationJobs(model);
             await _treatmentRepository.UpdateAsync(id, model);
 

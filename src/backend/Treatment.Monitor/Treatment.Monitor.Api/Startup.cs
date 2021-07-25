@@ -38,7 +38,6 @@ namespace Treatment.Monitor
                 });
 
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-            services.AddSingleton<ITreatmentMapper, TreatmentMapper>();
             services.AddSingletonDbContext(Configuration, s => new TreatmentMonitorContext(s));
             services.AddSecuritySettings(Configuration);
             services.AddHangfireConfiguration(Configuration, false, string.Empty);
