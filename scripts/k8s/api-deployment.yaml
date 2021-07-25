@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: treatment-monitor-api
-          image: bartee/treatment-monitor-api:1.0.4
+          image: bartee/treatment-monitor-api:1.0.5
           ports:
             - containerPort: 7000
               name: http
