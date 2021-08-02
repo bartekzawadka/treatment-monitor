@@ -7,7 +7,7 @@ metadata:
   
 spec:
   ports:
-    - port: 80
+    - port: 8888
       protocol: TCP
       targetPort: 7000
   selector:
